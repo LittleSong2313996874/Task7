@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace：命名空间，用于隔离sql -->
+<!-- 还有一个很重要的作用，使用动态代理开发DAO，1. namespace必须和Mapper接口类路径一致 -->
+<mapper namespace="com.ss.Dao.UserDao">
+
+	<!--resultMap标签：映射实体与表
+		type属性：实体类的全路径名
+		id属性:为实体与表的映射取一个任意的唯一的编号
+	 -->
+
+
+	<!-- 用于查找用户信息出来 -->
+	<select id="getObjectById" parameterType="int" resultType="com.ss.pojo.User">
+		select id,username,phone,email,portrait from User where  id = #{id}
+	</select>
+
+
+	<insert id="registerUser" parameterType="com.ss.pojo.User">
+		INSERT INTO User(username,password,createAt,updateAt)
+		VALUES(#{username},#{password},#{createAt},#{updateAt})
+	</insert>
+
+
+	<!--不管是根据用户名查找还是邮箱、手机号，一条动态sql搞定一切-->
+	<!-- where标签相当于where关键字，可以自动去除第一个and和or -->
+	<select id="isLogin" parameterType="com.ss.pojo.User" resultType="java.lang.String">
+		SELECT id FROM User
+		<where>
+			<if test="username!= null and username!=''">AND username=#{username}</if>
+			<if test="password!= null and password!=''">AND password=#{password}</if>
+			<if test="phone!= null and phone!=''">AND phone=#{phone}</if>
+			<if test="email!= null and email!=''">AND email=#{email}</if>
+		</where>
+	</select>
+
+	<!-- 更新  一般用于绑定手机或邮箱， 或添加头像路径 -->
+	<update id="updateObject" parameterType="com.ss.pojo.User">
+		update User
+
+		<set><!--set标签会去除只有最后一个条件的逗号-->
+			<if test="updateAt!=null and updateAt!=''">
+				updateAt=#{updateAt},
+				<if test="username!= null and username!=''">username=#{username},</if>
+				<if test="password!= null and password!=''">password=#{password},</if>
+				<if test="phone!= null and phone!=''">phone=#{phone},</if>
+				<if test="email!= null and email!=''">email=#{email},</if>
+				<if test="portrait!= null and portrait!=''">portrait=#{portrait},</if>
+			</if>
+		</set>
+
+		<where><!--where标签会去除第一个条件的and和or-->
+			<if test="id!=null">AND id=#{id}</if>
+		</where>
+
+	</update>
+
+
+</mapper>
+
+
+
+
