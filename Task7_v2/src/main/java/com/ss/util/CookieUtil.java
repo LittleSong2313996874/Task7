@@ -26,7 +26,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie("mark", token);
         //设置为"/"时，全服务器都能访问到这个cookie。
         // 也可以具体化，使只能有一个webapp才能访问，比如添加contextPath
-        cookie.setPath("/"+request.getContextPath());
+        cookie.setPath(request.getContextPath());
         //存活时间，删除时设置为0即可（别忘记设置vaule为null）
         cookie.setMaxAge(MAX_SEC);
         //本项目使用了JWT，就只需往session里面添加cookie，不需要添加其他东西了
@@ -91,7 +91,7 @@ public class CookieUtil {
     public static void clearTokenCookie(HttpServletResponse response, HttpServletRequest request) {
         Cookie cookie = new Cookie("mark",null);
         cookie.setMaxAge(0);
-        cookie.setPath("/"+request.getContextPath());
+        cookie.setPath(request.getContextPath());
         response.addCookie(cookie);
     }
 
